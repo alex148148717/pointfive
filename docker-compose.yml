@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: pg
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dbt
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  temporal:
+    image: temporalio/auto-setup:1.20.0
+    container_name: temporal
+    environment:
+      DB: postgresql
+      DB_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: postgres
+      POSTGRES_SEEDS: postgres
+    depends_on:
+      - postgres
+    ports:
+      - "7233:7233"
+
+  temporal-ui:
+    image: temporalio/ui:latest
+    container_name: temporal-ui
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    depends_on:
+      - temporal
+    ports:
+      - "8080:8080"
+
+  dbt:
+    image: fishtownanalytics/dbt:0.19.1
+    platform: linux/amd64
+    container_name: dbt
+    volumes:
+      - ./dbt/profiles.yml:/root/.dbt/profiles.yml
+      - ./dbt:/usr/app
+    working_dir: /usr/app
+    depends_on:
+      - postgres
+    command: ["run", "--project-dir", "." ]
+
+
+volumes:
+  pg_data:

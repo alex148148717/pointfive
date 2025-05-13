@@ -1,0 +1,13 @@
+//parse file to new file
+//load new file into db
+//delete new file
+
+//cron every 5 min
+//run dbt agg to new table
+//new table to file2
+//read file2 and insert to new db
+//read file2 and insert to redis
+//delete file2
+//:)
+
+

@@ -1,0 +1,7 @@
+name: my_dbt_project
+version: "1.0"
+config-version: 2
+profile: dbt
+source-paths: ["models"]
+target-path: "target"
+clean-targets: ["target"]
